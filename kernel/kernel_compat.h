@@ -400,7 +400,18 @@ static ssize_t ksu_strscpy_pad(char *dest, const char *src, size_t count)
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 11, 0) && !defined(KSU_HAS_ITERATE_DIR)
 struct dir_context { const filldir_t actor; loff_t pos; };
-#define iterate_dir(file, ctx) vfs_readdir(file, (ctx)->actor, ctx)
+static int ksu_iterate_dir(struct file *file, struct dir_context *ctx)
+{
+	extern int vfs_readdir(struct file *file, filldir_t filler, void *buf);
+	static_assert(!!&vfs_readdir, "vfs_readdir is missing!");
+
+	// torvalds/linux bb6f619b3a49f940d7478112500da312d70866eb
+	ctx->pos = file->f_pos;
+	int ret = vfs_readdir(file, ctx->actor, ctx);
+	file->f_pos = ctx->pos;
+	return ret;
+}
+#define iterate_dir ksu_iterate_dir
 #endif
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 0)
