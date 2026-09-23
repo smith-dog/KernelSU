@@ -408,7 +408,7 @@ fn extract_ramdisk(ramdisk_image: &RamdiskImage) -> Result<(Cpio, Option<usize>)
 
 fn enforce_bootimage_version(boot: &BootImage<'_>) -> Result<()> {
     if let BootImageVersion::Android(ver) = boot.get_header().get_version()
-        && ver < 3
+        && ver < 1
     {
         bail!("bootimage version {ver} is not supported!")
     }
