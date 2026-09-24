@@ -8,7 +8,7 @@ struct uid_data {
 	char package[KSU_MAX_PACKAGE_NAME];
 };
 
-static __always_inline void crown_manager(const char *apk, struct list_head *uid_data)
+static void crown_manager(const char *apk, struct list_head *uid_data)
 {
 	char pkg[KSU_MAX_PACKAGE_NAME];
 	if (get_pkg_from_apk_path(pkg, apk) < 0) {
